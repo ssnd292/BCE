@@ -118,8 +118,9 @@ class AddFWNModifier(bpy.types.Operator):
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:                
                 bpy.ops.object.modifier_add(type='WEIGHTED_NORMAL')
-                bpy.context.object.modifiers["Weighted Normal"].keep_sharp = True
-                bpy.context.object.modifiers["Weighted Normal"].weight = 100
+                bpy.context.object.modifiers["WeightedNormal"].keep_sharp = True
+                bpy.context.object.modifiers["WeightedNormal"].weight = 100
+ 100
 
     def execute(self, context):
         self.addfwnmodifier(context)
