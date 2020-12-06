@@ -68,6 +68,7 @@ class ResetScaleForLinkedObjects(bpy.types.Operator):
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']: 
                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                bpy.ops.object.select_linked(type='OBDATA')
                 bpy.ops.object.make_single_user(type='SELECTED_OBJECTS', object=True, obdata=True)        
                 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                 bpy.ops.object.make_links_data(type='OBDATA')
