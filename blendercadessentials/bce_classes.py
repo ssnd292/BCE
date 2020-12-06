@@ -1,4 +1,4 @@
-import bpy 
+import bpy
 
 
 class ClearCustomNormals(bpy.types.Operator):
