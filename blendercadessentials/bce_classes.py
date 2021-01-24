@@ -11,7 +11,7 @@ class ClearCustomNormals(bpy.types.Operator):
         for o in selection:
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
             bpy.context.view_layer.objects.active = o
-            if o.type  in ['MESH']:                
+            if o.type  in ['MESH']:
                 bpy.ops.mesh.customdata_custom_splitnormals_clear()
 
     def execute(self, context):
@@ -28,9 +28,9 @@ class MakeTrisToQuads(bpy.types.Operator):
         selection = bpy.context.selected_objects
         for o in selection:
             bpy.context.view_layer.objects.active = o
-            if o.type  in ['MESH']:                
+            if o.type  in ['MESH']:
                 bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-                bpy.ops.mesh.select_all(action='SELECT')    
+                bpy.ops.mesh.select_all(action='SELECT')
                 selection = bpy.context.selected_objects
                 bpy.ops.mesh.tris_convert_to_quads()
                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
@@ -48,9 +48,9 @@ class MakeSingleUserObjectData(bpy.types.Operator):
         selection = bpy.context.selected_objects
         for o in selection:
             bpy.context.view_layer.objects.active = o
-            if o.type in ['MESH']:                
+            if o.type in ['MESH']:
                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-                bpy.ops.object.make_single_user(type='SELECTED_OBJECTS', object=True, obdata=True)            
+                bpy.ops.object.make_single_user(type='SELECTED_OBJECTS', object=True, obdata=True)
     def execute(self, context):
         self.makesingleuser(context)
         return{'FINISHED'}
@@ -65,10 +65,10 @@ class ResetScaleForLinkedObjects(bpy.types.Operator):
         selection = bpy.context.selected_objects
         for o in selection:
             bpy.context.view_layer.objects.active = o
-            if o.type in ['MESH']: 
+            if o.type in ['MESH']:
                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
                 bpy.ops.object.select_linked(type='OBDATA')
-                bpy.ops.object.make_single_user(type='SELECTED_OBJECTS', object=True, obdata=True)        
+                bpy.ops.object.make_single_user(type='SELECTED_OBJECTS', object=True, obdata=True)
                 bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
                 bpy.ops.object.make_links_data(type='OBDATA')
     def execute(self, context):
@@ -96,11 +96,15 @@ class RenameUVMaps(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def renameuvmaps(self, context):
-        selection = bpy.context.selected_objects        
+        selection = bpy.context.selected_objects
         for o in selection:
             bpy.context.view_layer.objects.active = o
-            if o.type in ['MESH']:                
-                bpy.context.view_layer.objects.active.data.uv_layers[0].name = "UVMap"          
+            if o.type in ['MESH']:
+                if bpy.context.object.data.uv_layers:
+                    bpy.context.view_layer.objects.active.data.uv_layers[0].name = "UVMap"
+                else:
+                    bpy.ops.mesh.uv_texture_add()
+
     def execute(self, context):
         self.renameuvmaps(context)
         return{'FINISHED'}
@@ -116,7 +120,7 @@ class AddFWNModifier(bpy.types.Operator):
         selection = bpy.context.selected_objects
         for o in selection:
             bpy.context.view_layer.objects.active = o
-            if o.type in ['MESH']:                
+            if o.type in ['MESH']:
                 bpy.ops.object.modifier_add(type='WEIGHTED_NORMAL')
                 bpy.context.object.modifiers["WeightedNormal"].keep_sharp = True
                 bpy.context.object.modifiers["WeightedNormal"].weight = 100
@@ -137,7 +141,7 @@ class AddSmoothing(bpy.types.Operator):
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
                 bpy.ops.object.shade_smooth()
-                bpy.ops.hops.soft_sharpen(auto_smooth_angle=2.0944, is_global=True)            
+                bpy.ops.hops.soft_sharpen(auto_smooth_angle=2.0944, is_global=True)
     def execute(self, context):
         self.addsmoothing(context)
         return{'FINISHED'}
@@ -152,7 +156,7 @@ class DeleteLinkedObjects(bpy.types.Operator):
         bpy.ops.object.select_linked(type='OBDATA')
         bpy.context.active_object.select_set(False)
         bpy.ops.object.delete(use_global=False, confirm=False)
-            
+
     def execute(self, context):
         self.deletelinkedobjects(context)
         return{'FINISHED'}
