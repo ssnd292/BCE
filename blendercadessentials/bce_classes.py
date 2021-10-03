@@ -129,6 +129,24 @@ class AddFWNModifier(bpy.types.Operator):
         self.addfwnmodifier(context)
         return{'FINISHED'}
 
+class AddTriModifier(bpy.types.Operator):
+    bl_idname = "mesh.bce_addtrimodifier"
+    bl_label = "Addes Triangulate Modifier"
+    bl_description = "Triangulates Mesh"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def addtrimodifier(self, context):
+        selection = bpy.context.selected_objects
+        for o in selection:
+            bpy.context.view_layer.objects.active = o
+            if o.type in ['MESH']:
+                bpy.ops.object.ml_modifier_add(modifier_type="TRIANGULATE")
+                bpy.context.object.modifiers["Triangulate"].keep_custom_normals = True
+
+    def execute(self, context):
+        self.addtrimodifier(context)
+        return{'FINISHED'}
+
 class AddSmoothing(bpy.types.Operator):
     bl_idname = "mesh.bce_addsmoothing"
     bl_label = "Adds FWVN Modifier"
