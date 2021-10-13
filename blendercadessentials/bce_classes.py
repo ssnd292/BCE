@@ -112,7 +112,7 @@ class RenameUVMaps(bpy.types.Operator):
 
 class AddFWNModifier(bpy.types.Operator):
     bl_idname = "mesh.bce_addfwnmodifier"
-    bl_label = "Addes FWVN Modifier"
+    bl_label = "Adds FWVN Modifier"
     bl_description = "Addes Weighted Vertex Modifier with preset Settings"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -131,7 +131,7 @@ class AddFWNModifier(bpy.types.Operator):
 
 class AddTriModifier(bpy.types.Operator):
     bl_idname = "mesh.bce_addtrimodifier"
-    bl_label = "Addes Triangulate Modifier"
+    bl_label = "Adds Triangulate Modifier"
     bl_description = "Triangulates Mesh"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -145,6 +145,35 @@ class AddTriModifier(bpy.types.Operator):
 
     def execute(self, context):
         self.addtrimodifier(context)
+        return{'FINISHED'}
+
+class AddMirror(bpy.types.Operator):
+    bl_idname = "mesh.bce_addmirror"
+    bl_label = "Adds Mirror Modifier"
+    bl_description = "Mirrors Mesh"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def addmirror(self, context):
+        selection = bpy.context.selected_objects
+        for o in selection:
+            bpy.context.view_layer.objects.active = o
+            if o.type in ['MESH']:
+                
+                bpy.ops.object.ml_modifier_add(modifier_type="MIRROR")
+                mirrorHelper = bpy.context.scene.objects.get("MirrorHelper")
+                if mirrorHelper:
+                    bpy.context.object.modifiers["Mirror"].mirror_object = bpy.data.objects["MirrorHelper"]
+                else:
+                    tempSelectedObject = bpy.context.view_layer.objects.active
+                    bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+                    for obj in bpy.context.selected_objects:
+                         obj.name = "MirrorHelper"
+                    bpy.context.view_layer.objects.active = tempSelectedObject
+                    bpy.context.object.modifiers["Mirror"].mirror_object = bpy.data.objects["MirrorHelper"]
+
+
+    def execute(self, context):
+        self.addmirror(context)
         return{'FINISHED'}
 
 class AddSmoothing(bpy.types.Operator):

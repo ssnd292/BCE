@@ -3,7 +3,7 @@ bl_info = {
     "author" : "Sebastian Schneider",
     "description" : "Collection of often needed tools when working with imported CAD Data",
     "blender" : (2, 93, 0),
-    'version': (0, 0, 7),
+    'version': (0, 0, 8),
     "location" : "View3D",
     "warning" : "",
     "category" : "Generic"
@@ -54,6 +54,9 @@ class Blender_CAD_Essentials_Panel(bpy.types.Panel):
 
         row = layout.row(align=True)
         row.operator('mesh.bce_addtrimodifier' ,text="Add Triangulate Modifier")
+        
+        row = layout.row(align=True)
+        row.operator('mesh.bce_addmirror' ,text="Mirror w/ MirrorHelper")
 
         row = layout.row(align=True)
         row.operator('mesh.bce_renameuvmaps' ,text="Rename UV Maps")
@@ -78,6 +81,7 @@ classes = (
     bce_classes.RenameUVMaps,
     bce_classes.AddFWNModifier,
     bce_classes.AddTriModifier,
+    bce_classes.AddMirror,
     bce_classes.AddSmoothing,
     bce_classes.DeleteLinkedObjects,
 )
