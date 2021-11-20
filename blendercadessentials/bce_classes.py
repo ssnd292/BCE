@@ -3,7 +3,7 @@ import bpy
 class ClearCustomNormals(bpy.types.Operator):
     bl_idname = "mesh.bce_clearnormals"
     bl_label = "Clear Custom Normals"
-    bl_description = "Clears Custome Split Normals of Selected Meshes"
+    bl_description = "Clears Custome Normals of Selected Meshes"
     bl_options = {'REGISTER', 'UNDO'}
 
     def reset_normals(self, context):
@@ -32,7 +32,7 @@ class MakeTrisToQuads(bpy.types.Operator):
                 bpy.ops.object.mode_set(mode='EDIT', toggle=False)
                 bpy.ops.mesh.select_all(action='SELECT')
                 selection = bpy.context.selected_objects
-                bpy.ops.mesh.tris_convert_to_quads()
+                bpy.ops.mesh.tris_convert_to_quads(uvs=True)
                 bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
     def execute(self, context):
         self.tristoquads(context)
