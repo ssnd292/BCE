@@ -1,6 +1,6 @@
 import bpy
 
-class ClearCustomNormals(bpy.types.Operator):
+class MESH_OT_ClearCustomNormals(bpy.types.Operator):
     bl_idname = "mesh.bce_clearnormals"
     bl_label = "Clear Custom Normals"
     bl_description = "Clears Custome Normals of Selected Meshes"
@@ -18,7 +18,7 @@ class ClearCustomNormals(bpy.types.Operator):
         self.reset_normals(context)
         return{'FINISHED'}
 
-class MakeTrisToQuads(bpy.types.Operator):
+class MESH_OT_MakeTrisToQuads(bpy.types.Operator):
     bl_idname = "mesh.bce_tristoquads"
     bl_label = "Tris To Quads"
     bl_description = "Removes Triangulation"
@@ -38,7 +38,7 @@ class MakeTrisToQuads(bpy.types.Operator):
         self.tristoquads(context)
         return{'FINISHED'}
 
-class MakeSingleUserObjectData(bpy.types.Operator):
+class MESH_OT_MakeSingleUserObjectData(bpy.types.Operator):
     bl_idname = "mesh.bce_makesingleuser"
     bl_label = "Make Single User"
     bl_description = "Makes Object and Data Single User"
@@ -55,7 +55,7 @@ class MakeSingleUserObjectData(bpy.types.Operator):
         self.makesingleuser(context)
         return{'FINISHED'}
 
-class ResetScaleForLinkedObjects(bpy.types.Operator):
+class MESH_OT_ResetScaleForLinkedObjects(bpy.types.Operator):
     bl_idname = "mesh.bce_resetscale"
     bl_label = "Reset Scale for Linked Objects"
     bl_description = "Resets Data Links and Scale and Relinks Data"
@@ -76,7 +76,7 @@ class ResetScaleForLinkedObjects(bpy.types.Operator):
         return{'FINISHED'}
 
 
-class ConvertHardEdgesToSeams(bpy.types.Operator):
+class MESH_OT_ConvertHardEdgesToSeams(bpy.types.Operator):
     bl_idname = "mesh.bce_hardedgestoseams"
     bl_label = "Create Seams"
     bl_description = "Create Seams from Selected Hard Edge"
@@ -89,28 +89,7 @@ class ConvertHardEdgesToSeams(bpy.types.Operator):
         self.hardedgestoseams(context)
         return{'FINISHED'}
 
-class RenameUVMaps(bpy.types.Operator):
-    bl_idname = "mesh.bce_renameuvmaps"
-    bl_label = "Renames UV Maps of Selected Objects"
-    bl_description = "Renames UV Maps to UVMap of all Selected Objects"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def renameuvmaps(self, context):
-        selection = bpy.context.selected_objects
-        for o in selection:
-            bpy.context.view_layer.objects.active = o
-            if o.type in ['MESH']:
-                if bpy.context.object.data.uv_layers:
-                    bpy.context.view_layer.objects.active.data.uv_layers[0].name = "UVMap"
-                else:
-                    bpy.ops.mesh.uv_texture_add()
-
-    def execute(self, context):
-        self.renameuvmaps(context)
-        return{'FINISHED'}
-
-
-class AddFWNModifier(bpy.types.Operator):
+class MESH_OT_AddFWNModifier(bpy.types.Operator):
     bl_idname = "mesh.bce_addfwnmodifier"
     bl_label = "Adds FWVN Modifier"
     bl_description = "Addes Weighted Vertex Modifier with preset Settings"
@@ -129,7 +108,7 @@ class AddFWNModifier(bpy.types.Operator):
         self.addfwnmodifier(context)
         return{'FINISHED'}
 
-class AddTriModifier(bpy.types.Operator):
+class MESH_OT_AddTriModifier(bpy.types.Operator):
     bl_idname = "mesh.bce_addtrimodifier"
     bl_label = "Adds Triangulate Modifier"
     bl_description = "Triangulates Mesh"
@@ -147,7 +126,7 @@ class AddTriModifier(bpy.types.Operator):
         self.addtrimodifier(context)
         return{'FINISHED'}
 
-class AddMirror(bpy.types.Operator):
+class MESH_OT_AddMirror(bpy.types.Operator):
     bl_idname = "mesh.bce_addmirror"
     bl_label = "Adds Mirror Modifier"
     bl_description = "Mirrors Mesh"
@@ -176,7 +155,7 @@ class AddMirror(bpy.types.Operator):
         self.addmirror(context)
         return{'FINISHED'}
 
-class AddSmoothing(bpy.types.Operator):
+class MESH_OT_AddSmoothing(bpy.types.Operator):
     bl_idname = "mesh.bce_addsmoothing"
     bl_label = "Adds FWVN Modifier"
     bl_description = "Adds Weighted Vertex Modifier with preset Settings"
@@ -193,7 +172,7 @@ class AddSmoothing(bpy.types.Operator):
         self.addsmoothing(context)
         return{'FINISHED'}
 
-class DeleteLinkedObjects(bpy.types.Operator):
+class MESH_OT_DeleteLinkedObjects(bpy.types.Operator):
     bl_idname = "mesh.bce_deletelinkedobjects"
     bl_label = "Deleted Linked Objects but Active"
     bl_description = "Deleted Linked Objects but Active"
@@ -206,4 +185,55 @@ class DeleteLinkedObjects(bpy.types.Operator):
 
     def execute(self, context):
         self.deletelinkedobjects(context)
+        return{'FINISHED'}
+
+class MESH_OT_RenameUVMaps(bpy.types.Operator):
+    bl_idname = "mesh.bce_renameuvmaps"
+    bl_label = "Renames UV Maps of Selected Objects"
+    bl_description = "Renames UV Maps to UVMap of all Selected Objects"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def renameuvmaps(self, context):
+        selection = bpy.context.selected_objects
+        for o in selection:
+            bpy.context.view_layer.objects.active = o
+            if o.type in ['MESH']:
+                if bpy.context.object.data.uv_layers:
+                    bpy.context.view_layer.objects.active.data.uv_layers[0].name = "UVMap"
+                else:
+                    bpy.ops.mesh.uv_texture_add()
+
+    def execute(self, context):
+        self.renameuvmaps(context)
+        return{'FINISHED'}
+
+
+class MESH_OT_TransferUVMaps(bpy.types.Operator):
+    bl_idname = "mesh.bce_transferuvmaps"
+    bl_label = "Transfers UVMaps"
+    bl_description = "Transfers UVMap from Active to Selected"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def transferuvmaps(self, context):
+        bpy.ops.object.data_transfer(data_type='UV', use_create=True, loop_mapping='POLYINTERP_LNORPROJ', poly_mapping='NORMAL', use_object_transform=True, ray_radius=0.01, islands_precision=0.5)
+            
+    def execute(self, context):
+        self.transferuvmaps(context)
+        return{'FINISHED'}
+
+class MESH_OT_AddSecondUV(bpy.types.Operator):
+    bl_idname = "mesh.bce_addseconduv"
+    bl_label = "Adds Second UVMap"
+    bl_description = "Add Second UVMap to all Selected Objects if they only have one"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def addseconduv(self, context):
+        selection = bpy.context.selected_objects
+        for o in selection:
+            bpy.context.view_layer.objects.active = o
+            if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) == 1:
+                bpy.ops.mesh.uv_texture_add()
+            
+    def addseconduv(self, context):
+        self.transferuvmaps(context)
         return{'FINISHED'}
