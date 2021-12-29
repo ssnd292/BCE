@@ -43,7 +43,7 @@ class BCEProperties(PropertyGroup):
         )
 
     floatSmoothing: FloatProperty(
-        name = "Smoothing Angle",
+        name = "",
         description = "HardOps Smoothing Angle",
         default = radians(60),
         min = radians(0.0),
@@ -83,10 +83,9 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row.operator('mesh.bce_addmirror' ,text="Mirror")
 
         row = layout.row(align=True)        
+        row.prop(bceprops, "floatSmoothing") 
         row.operator('mesh.bce_addsmoothing' ,text="HardOps Sharpen")
-
-        #row = layout.row(align=True) 
-        #row.prop(bceprops, "floatSmoothing")
+        
 
         ##
         layout.separator()
@@ -138,7 +137,7 @@ classes = (
     bce_classes.BCE_OT_AddFWNModifier,
     bce_classes.BCE_OT_AddTriModifier,
     bce_classes.BCE_OT_AddMirror,
-    #bce_classes.BCE_OT_SetHOPsSharpness,
+    bce_classes.BCE_OT_SetHOPsSharpness,
     bce_classes.BCE_OT_AddSmoothing,    
     bce_classes.BCE_OT_DeleteLinkedObjects,
     bce_classes.BCE_OT_TransferUVMaps,

@@ -153,15 +153,9 @@ class BCE_OT_SetHOPsSharpness(bpy.types.Operator):
     bl_label = "Overrides HardOps Global Sharpness Angle"
     bl_description = "Overrides Hardops Sharpness Angle"
 
-    sharpness: FloatProperty(name="angle edge marks are applied to", default=radians(60), min=radians(1), max=radians(180), subtype="ANGLE")
-
     def execute(self, context):
-        print("Executing Smoothness Overwrite")
         angle = context.scene.bceprops.floatSmoothing
-        print("Setting Sharpness Angle to: "+str(radians(angle)))
-        self.sharpness: FloatProperty(name="angle edge marks are applied to", default=radians(angle), min=radians(1), max=radians(180), subtype="ANGLE")
-        bpy.context.preferences.addons["HOps"].preferences.property.sharpness = self.sharpness
-        print("Finished Smoothness Overwrite")
+        bpy.context.preferences.addons["HOps"].preferences.property.sharpness = angle
         return {"FINISHED"}
 
 class BCE_OT_AddSmoothing(bpy.types.Operator):
@@ -172,9 +166,9 @@ class BCE_OT_AddSmoothing(bpy.types.Operator):
 
     def addsmoothing(self, context):        
         selection = bpy.context.selected_objects
-        #print("Starting Smoothness Overwrite")
-        #bpy.ops.mesh.bce_set_hopssharpness()
-        #print("Returning to Setting HOps Sharpen")
+        print("Starting Smoothness Overwrite")
+        bpy.ops.mesh.bce_set_hopssharpness()
+        print("Returning to Setting HOps Sharpen")
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
