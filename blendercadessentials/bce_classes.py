@@ -1,6 +1,12 @@
 import bpy
+from math import radians
+from bpy.props import FloatProperty
 
-class MESH_OT_ClearCustomNormals(bpy.types.Operator):
+#########################################
+## Modelling
+#########################################
+
+class BCE_OT_ClearCustomNormals(bpy.types.Operator):
     bl_idname = "mesh.bce_clearnormals"
     bl_label = "Clear Custom Normals"
     bl_description = "Clears Custome Normals of Selected Meshes"
@@ -18,7 +24,7 @@ class MESH_OT_ClearCustomNormals(bpy.types.Operator):
         self.reset_normals(context)
         return{'FINISHED'}
 
-class MESH_OT_MakeTrisToQuads(bpy.types.Operator):
+class BCE_OT_MakeTrisToQuads(bpy.types.Operator):
     bl_idname = "mesh.bce_tristoquads"
     bl_label = "Tris To Quads"
     bl_description = "Removes Triangulation"
@@ -38,7 +44,7 @@ class MESH_OT_MakeTrisToQuads(bpy.types.Operator):
         self.tristoquads(context)
         return{'FINISHED'}
 
-class MESH_OT_MakeSingleUserObjectData(bpy.types.Operator):
+class BCE_OT_MakeSingleUserObjectData(bpy.types.Operator):
     bl_idname = "mesh.bce_makesingleuser"
     bl_label = "Make Single User"
     bl_description = "Makes Object and Data Single User"
@@ -55,7 +61,7 @@ class MESH_OT_MakeSingleUserObjectData(bpy.types.Operator):
         self.makesingleuser(context)
         return{'FINISHED'}
 
-class MESH_OT_ResetScaleForLinkedObjects(bpy.types.Operator):
+class BCE_OT_ResetScaleForLinkedObjects(bpy.types.Operator):
     bl_idname = "mesh.bce_resetscale"
     bl_label = "Reset Scale for Linked Objects"
     bl_description = "Resets Data Links and Scale and Relinks Data"
@@ -75,21 +81,7 @@ class MESH_OT_ResetScaleForLinkedObjects(bpy.types.Operator):
         self.resetscalandrelink(context)
         return{'FINISHED'}
 
-
-class MESH_OT_ConvertHardEdgesToSeams(bpy.types.Operator):
-    bl_idname = "mesh.bce_hardedgestoseams"
-    bl_label = "Create Seams"
-    bl_description = "Create Seams from Selected Hard Edge"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def hardedgestoseams(self, context):
-        bpy.ops.mesh.select_similar(type='SHARP', threshold=0.01)
-        bpy.ops.mesh.mark_seam(clear=False)
-    def execute(self, context):
-        self.hardedgestoseams(context)
-        return{'FINISHED'}
-
-class MESH_OT_AddFWNModifier(bpy.types.Operator):
+class BCE_OT_AddFWNModifier(bpy.types.Operator):
     bl_idname = "mesh.bce_addfwnmodifier"
     bl_label = "Adds FWVN Modifier"
     bl_description = "Addes Weighted Vertex Modifier with preset Settings"
@@ -108,7 +100,7 @@ class MESH_OT_AddFWNModifier(bpy.types.Operator):
         self.addfwnmodifier(context)
         return{'FINISHED'}
 
-class MESH_OT_AddTriModifier(bpy.types.Operator):
+class BCE_OT_AddTriModifier(bpy.types.Operator):
     bl_idname = "mesh.bce_addtrimodifier"
     bl_label = "Adds Triangulate Modifier"
     bl_description = "Triangulates Mesh"
@@ -126,7 +118,7 @@ class MESH_OT_AddTriModifier(bpy.types.Operator):
         self.addtrimodifier(context)
         return{'FINISHED'}
 
-class MESH_OT_AddMirror(bpy.types.Operator):
+class BCE_OT_AddMirror(bpy.types.Operator):
     bl_idname = "mesh.bce_addmirror"
     bl_label = "Adds Mirror Modifier"
     bl_description = "Mirrors Mesh"
@@ -134,81 +126,153 @@ class MESH_OT_AddMirror(bpy.types.Operator):
 
     def addmirror(self, context):
         selection = bpy.context.selected_objects
+        bceprops = context.scene.bceprops
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
                 
                 bpy.ops.object.ml_modifier_add(modifier_type="MIRROR")
-                mirrorHelper = bpy.context.scene.objects.get("MirrorHelper")
-                if mirrorHelper:
-                    bpy.context.object.modifiers["Mirror"].mirror_object = bpy.data.objects["MirrorHelper"]
-                else:
-                    tempSelectedObject = bpy.context.view_layer.objects.active
-                    bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
-                    for obj in bpy.context.selected_objects:
-                         obj.name = "MirrorHelper"
-                    bpy.context.view_layer.objects.active = tempSelectedObject
-                    bpy.context.object.modifiers["Mirror"].mirror_object = bpy.data.objects["MirrorHelper"]
-
+                if bceprops.boolUseMirrorHelper:
+                    mirrorHelper = bpy.context.scene.objects.get("MirrorHelper")
+                    if mirrorHelper:
+                        bpy.context.object.modifiers["Mirror"].mirror_object = bpy.data.objects["MirrorHelper"]
+                    else:
+                        tempSelectedObject = bpy.context.view_layer.objects.active
+                        bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+                        for obj in bpy.context.selected_objects:
+                            obj.name = "MirrorHelper"
+                        bpy.context.view_layer.objects.active = tempSelectedObject
+                        bpy.context.object.modifiers["Mirror"].mirror_object = bpy.data.objects["MirrorHelper"]
 
     def execute(self, context):
         self.addmirror(context)
         return{'FINISHED'}
 
-class MESH_OT_AddSmoothing(bpy.types.Operator):
+class BCE_OT_SetHOPsSharpness(bpy.types.Operator):
+    bl_idname = "mesh.bce_set_hopssharpness"
+    bl_label = "Overrides HardOps Global Sharpness Angle"
+    bl_description = "Overrides Hardops Sharpness Angle"
+
+    sharpness: FloatProperty(name="angle edge marks are applied to", default=radians(60), min=radians(1), max=radians(180), subtype="ANGLE")
+
+    def execute(self, context):
+        print("Executing Smoothness Overwrite")
+        angle = context.scene.bceprops.floatSmoothing
+        print("Setting Sharpness Angle to: "+str(radians(angle)))
+        self.sharpness: FloatProperty(name="angle edge marks are applied to", default=radians(angle), min=radians(1), max=radians(180), subtype="ANGLE")
+        bpy.context.preferences.addons["HOps"].preferences.property.sharpness = self.sharpness
+        print("Finished Smoothness Overwrite")
+        return {"FINISHED"}
+
+class BCE_OT_AddSmoothing(bpy.types.Operator):
     bl_idname = "mesh.bce_addsmoothing"
-    bl_label = "Adds FWVN Modifier"
-    bl_description = "Adds Weighted Vertex Modifier with preset Settings"
+    bl_label = "Adds HOps SSharpen"
+    bl_description = "Uses HOps SSharpen"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def addsmoothing(self, context):
+    def addsmoothing(self, context):        
         selection = bpy.context.selected_objects
+        #print("Starting Smoothness Overwrite")
+        #bpy.ops.mesh.bce_set_hopssharpness()
+        #print("Returning to Setting HOps Sharpen")
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
                 bpy.ops.object.shade_smooth()
-                bpy.ops.hops.soft_sharpen(auto_smooth_angle=2.0944, is_global=True)
+                bpy.ops.hops.sharpen(behavior='SSHARP', mode='SSHARP', additive_mode=True, auto_smooth_angle=3.14159, is_global=True)
+
+
     def execute(self, context):
         self.addsmoothing(context)
         return{'FINISHED'}
 
-class MESH_OT_DeleteLinkedObjects(bpy.types.Operator):
-    bl_idname = "mesh.bce_deletelinkedobjects"
-    bl_label = "Deleted Linked Objects but Active"
-    bl_description = "Deleted Linked Objects but Active"
+#########################################
+## Unwrapping
+#########################################
+
+class BCE_OT_ConvertHardEdgesToSeams(bpy.types.Operator):
+    bl_idname = "mesh.bce_hardedgestoseams"
+    bl_label = "Create Seams"
+    bl_description = "Create Seams from Selected Hard Edge"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def deletelinkedobjects(self, context):
-        bpy.ops.object.select_linked(type='OBDATA')
-        bpy.context.active_object.select_set(False)
-        bpy.ops.object.delete(use_global=False, confirm=False)
-
+    def hardedgestoseams(self, context):
+        selection = bpy.context.selected_objects
+        if bpy.context.active_object.data.total_edge_sel == 1:
+            bpy.ops.mesh.select_similar(type='SHARP', threshold=0.01)
+            bpy.ops.mesh.mark_seam(clear=False)
     def execute(self, context):
-        self.deletelinkedobjects(context)
+        self.hardedgestoseams(context)
         return{'FINISHED'}
 
-class MESH_OT_RenameUVMaps(bpy.types.Operator):
-    bl_idname = "mesh.bce_renameuvmaps"
-    bl_label = "Renames UV Maps of Selected Objects"
-    bl_description = "Renames UV Maps to UVMap of all Selected Objects"
+class BCE_OT_SelectUVMap01(bpy.types.Operator):
+    bl_idname = "mesh.bce_selectuvmap01"
+    bl_label = "Select UVMap 01"
+    bl_description = "Selects First UVMap"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def renameuvmaps(self, context):
+    def selectuvmap01(self, context):
         selection = bpy.context.selected_objects
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
-                if bpy.context.object.data.uv_layers:
-                    bpy.context.view_layer.objects.active.data.uv_layers[0].name = "UVMap"
+                o.data.uv_layers.active_index = 0
+
+    def execute(self, context):
+        self.selectuvmap01(context)
+        return{'FINISHED'}
+
+class BCE_OT_SelectUVMap02(bpy.types.Operator):
+    bl_idname = "mesh.bce_selectuvmap02"
+    bl_label = "Select UVMap 02"
+    bl_description = "Selects First UVMap"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def selectuvmap02(self, context):
+        selection = bpy.context.selected_objects
+        for o in selection:
+            bpy.context.view_layer.objects.active = o
+            if o.type in ['MESH'] and len(o.data.uv_layers) == 2:
+                o.data.uv_layers.active_index = 1
+
+    def execute(self, context):
+        self.selectuvmap02(context)
+        return{'FINISHED'}
+
+
+class BCE_OT_RenameUVMaps(bpy.types.Operator):
+    bl_idname = "mesh.bce_renameuvmaps"
+    bl_label = "Renames Active UV Maps of Selected Objects"
+    bl_description = "Renames Active UV Maps of all Selected Objects"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def renameuvmaps(self, context):
+        selection = bpy.context.selected_objects
+        newUVMapName = context.scene.bceprops.stringUVMapName
+        for o in selection:
+            bpy.context.view_layer.objects.active = o
+            if o.type in ['MESH']:
+                uvLayers = bpy.context.object.data.uv_layers
+                currentUVMap = uvLayers.active_index
+                if uvLayers:
+                    if uvLayers[currentUVMap].name == newUVMapName:
+                        self.report({'INFO'}, 'A UVMap with that Name already exists.')
+                    else:
+                        uvLayers[currentUVMap].name = newUVMapName
                 else:
                     bpy.ops.mesh.uv_texture_add()
+                    if uvLayers[currentUVMap].name == newUVMapName:
+                        self.report({'INFO'}, 'A UVMap with that Name already exists.')
+                    else:
+                        uvLayers[currentUVMap].name = newUVMapName
+                    
 
     def execute(self, context):
         self.renameuvmaps(context)
         return{'FINISHED'}
 
 
-class MESH_OT_TransferUVMaps(bpy.types.Operator):
+class BCE_OT_TransferUVMaps(bpy.types.Operator):
     bl_idname = "mesh.bce_transferuvmaps"
     bl_label = "Transfers UVMaps"
     bl_description = "Transfers UVMap from Active to Selected"
@@ -221,7 +285,7 @@ class MESH_OT_TransferUVMaps(bpy.types.Operator):
         self.transferuvmaps(context)
         return{'FINISHED'}
 
-class MESH_OT_AddSecondUV(bpy.types.Operator):
+class BCE_OT_AddSecondUV(bpy.types.Operator):
     bl_idname = "mesh.bce_addseconduv"
     bl_label = "Adds Second UVMap"
     bl_description = "Add Second UVMap to all Selected Objects if they only have one"
@@ -236,4 +300,23 @@ class MESH_OT_AddSecondUV(bpy.types.Operator):
             
     def addseconduv(self, context):
         self.transferuvmaps(context)
+        return{'FINISHED'}
+
+#########################################
+## Misc
+#########################################
+
+class BCE_OT_DeleteLinkedObjects(bpy.types.Operator):
+    bl_idname = "mesh.bce_deletelinkedobjects"
+    bl_label = "Deleted Linked Objects but Active"
+    bl_description = "Deleted Linked Objects but Active"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def deletelinkedobjects(self, context):
+        bpy.ops.object.select_linked(type='OBDATA')
+        bpy.context.active_object.select_set(False)
+        bpy.ops.object.delete(use_global=False, confirm=False)
+
+    def execute(self, context):
+        self.deletelinkedobjects(context)
         return{'FINISHED'}

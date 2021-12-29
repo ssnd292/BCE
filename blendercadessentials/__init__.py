@@ -6,7 +6,7 @@ bl_info = {
     'version': (0, 1, 0),
     "location" : "View3D",
     "warning" : "",
-    "category" : "Generic"
+    "category" : "View3D"
 }
 
 import bpy
@@ -25,10 +25,12 @@ from bpy.types import (Panel,
                        Operator,
                        PropertyGroup,
                        )
+                       
+from math import radians
 
 class BCEProperties(PropertyGroup):
     boolUseMirrorHelper: BoolProperty(
-        name="Use MirrorHelper",
+        name="MirrorHelper",
         description="Uses MirrorHelper for Mirroring",
         default = True
         )
@@ -36,20 +38,21 @@ class BCEProperties(PropertyGroup):
     stringUVMapName: StringProperty(
         name="Name:",
         description="Name of Renamed UVMap",
-        default="UVmap",
+        default="UVMap",
         maxlen=1024
         )
 
     floatSmoothing: FloatProperty(
-        name = "Smotthing Angle °",
+        name = "Smoothing Angle",
         description = "HardOps Smoothing Angle",
-        default = 60,
-        min = 0.0,
-        max = 180.0
+        default = radians(60),
+        min = radians(0.0),
+        max = radians(180.0),
+        subtype="ANGLE",
         )
 
 class BCE_PT_MainUI(bpy.types.Panel):
-    bl_idname = "Essentials"
+    bl_idname = "BCE_PT_MainUI"
     bl_label = "Blender CAD Essentials"
     bl_category = "Item"
     bl_space_type = "VIEW_3D"
@@ -73,23 +76,26 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row.operator('mesh.bce_resetscale' ,text="Reset Scale of Links")
 
         row = layout.row(align=True)
-        row.operator('mesh.bce_addtrimodifier' ,text="Add Triangulate Modifier")
+        row.operator('mesh.bce_addtrimodifier' ,text="Triangulate")
         
         row = layout.row(align=True)
-        row.operator('mesh.bce_addmirror' ,text="Mirror w/ MirrorHelper")
-        row = layout.row(align=True) 
         row.prop(bceprops, "boolUseMirrorHelper")
+        row.operator('mesh.bce_addmirror' ,text="Mirror")
 
         row = layout.row(align=True)        
         row.operator('mesh.bce_addsmoothing' ,text="HardOps Sharpen")
 
-        row = layout.row(align=True) 
-        row.prop(bceprops, "floatSmoothing")
+        #row = layout.row(align=True) 
+        #row.prop(bceprops, "floatSmoothing")
 
         ##
         layout.separator()
         ##
         layout.label(text="Unwrapping Functions:")
+
+        row = layout.row(align=True)
+        row.operator('mesh.bce_selectuvmap01' ,text="UVMap01")
+        row.operator('mesh.bce_selectuvmap02' ,text="UVMap02")
 
         row = layout.row(align=True)
         row.operator('mesh.bce_hardedgestoseams' ,text="Convert to Seams")  
@@ -121,19 +127,22 @@ from . import bce_classes
 classes = (
     BCEProperties,
     BCE_PT_MainUI,
-    bce_classes.MESH_OT_ClearCustomNormals,
-    bce_classes.MESH_OT_MakeTrisToQuads,
-    bce_classes.MESH_OT_MakeSingleUserObjectData,
-    bce_classes.MESH_OT_ResetScaleForLinkedObjects,
-    bce_classes.MESH_OT_ConvertHardEdgesToSeams,
-    bce_classes.MESH_OT_RenameUVMaps,
-    bce_classes.MESH_OT_AddFWNModifier,
-    bce_classes.MESH_OT_AddTriModifier,
-    bce_classes.MESH_OT_AddMirror,
-    bce_classes.MESH_OT_AddSmoothing,
-    bce_classes.MESH_OT_DeleteLinkedObjects,
-    bce_classes.MESH_OT_TransferUVMaps,
-    bce_classes.MESH_OT_AddSecondUV,
+    bce_classes.BCE_OT_ClearCustomNormals,
+    bce_classes.BCE_OT_MakeTrisToQuads,
+    bce_classes.BCE_OT_MakeSingleUserObjectData,
+    bce_classes.BCE_OT_ResetScaleForLinkedObjects,
+    bce_classes.BCE_OT_ConvertHardEdgesToSeams,
+    bce_classes.BCE_OT_SelectUVMap01,
+    bce_classes.BCE_OT_SelectUVMap02,
+    bce_classes.BCE_OT_RenameUVMaps,
+    bce_classes.BCE_OT_AddFWNModifier,
+    bce_classes.BCE_OT_AddTriModifier,
+    bce_classes.BCE_OT_AddMirror,
+    #bce_classes.BCE_OT_SetHOPsSharpness,
+    bce_classes.BCE_OT_AddSmoothing,    
+    bce_classes.BCE_OT_DeleteLinkedObjects,
+    bce_classes.BCE_OT_TransferUVMaps,
+    bce_classes.BCE_OT_AddSecondUV,
 )
 
 def register():
