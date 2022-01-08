@@ -1,5 +1,6 @@
 import bpy
 from math import radians
+from random import sample
 from bpy.props import FloatProperty
 
 #########################################
@@ -80,6 +81,59 @@ class BCE_OT_ResetScaleForLinkedObjects(bpy.types.Operator):
     def execute(self, context):
         self.resetscalandrelink(context)
         return{'FINISHED'}
+
+class BCE_OT_ChangedNumberOfLinkedObjects(bpy.types.Operator):
+    bl_idname = "mesh.bce_changenumberoflinkedobjects"
+    bl_label = "Reset Scale for Linked Objects"
+    bl_description = "Resets Data Links and Scale and Relinks Data"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def changenumberoflinkedobjects(self, context):
+        selection = bpy.context.selected_objects
+        bceprops = context.scene.bceprops
+        maxObjNumber = bceprops.maxObjectNumber
+        divider = bceprops.commonDenominatorInt
+       
+        if maxObjNumber == 0:
+            maxObjNumber = len(selection)
+            bceprops.maxObjectNumber = maxObjNumber
+        
+        numberOfSelections = maxObjNumber/divider
+        print("Number of Objects to Select: "+ str(numberOfSelections))
+
+        if ".0" in str(numberOfSelections):
+            newSelection = sample(selection, int(numberOfSelections))
+            print("Number of selected Objects: "+ str(len(newSelection)))
+            bpy.ops.object.select_all(action='DESELECT')
+
+            for o in newSelection:
+                o.select_set(True)
+
+            for o in newSelection:
+                bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+                bpy.ops.object.make_single_user(type='SELECTED_OBJECTS', object=True, obdata=True)
+                bpy.ops.object.make_links_data(type='OBDATA')
+
+        else:
+            self.report({'WARNING'}, 'Your Number is not a Denominator of the whole Object Amount!')
+
+    def execute(self, context):
+        self.changenumberoflinkedobjects(context)
+        return{'FINISHED'}
+
+class BCE_OT_ResetNumberCounter(bpy.types.Operator):
+    bl_idname = "mesh.bce_resetnumbercounter"
+    bl_label = "Reset Scale for Linked Objects"
+    bl_description = "Resets Data Links and Scale and Relinks Data"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def resetnumbercounter(self, context):
+        bceprops = context.scene.bceprops
+        bceprops.maxObjectNumber = 0
+    def execute(self, context):
+        self.resetnumbercounter(context)
+        return{'FINISHED'}
+
 
 class BCE_OT_AddFWNModifier(bpy.types.Operator):
     bl_idname = "mesh.bce_addfwnmodifier"

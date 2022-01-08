@@ -3,7 +3,7 @@ bl_info = {
     "author" : "Sebastian Schneider",
     "description" : "Collection of often needed tools when working with imported CAD Data",
     "blender" : (2, 93, 0),
-    'version': (0, 1, 0),
+    'version': (0, 1, 1),
     "location" : "View3D",
     "warning" : "",
     "category" : "View3D"
@@ -51,6 +51,22 @@ class BCEProperties(PropertyGroup):
         subtype="ANGLE",
         )
 
+    maxObjectNumber: IntProperty(
+        name = "",
+        description = "Number of Maximum Objects",
+        default = 0,
+        min = 0,
+        max = 10000,
+        )
+
+    commonDenominatorInt: IntProperty(
+        name = "",
+        description = "Number of Linked Groups Wanted",
+        default = 2,
+        min = 0,
+        max = 10000,
+        )
+
 class BCE_PT_MainUI(bpy.types.Panel):
     bl_idname = "BCE_PT_MainUI"
     bl_label = "Blender CAD Essentials"
@@ -74,6 +90,15 @@ class BCE_PT_MainUI(bpy.types.Panel):
 
         row = layout.row(align=True)
         row.operator('mesh.bce_resetscale' ,text="Reset Scale of Links")
+
+        layout.separator()
+        row = layout.row(align=True)
+        row.prop(bceprops, "maxObjectNumber")
+        row.prop(bceprops, "commonDenominatorInt")
+        row = layout.row(align=True)
+        row.operator('mesh.bce_resetnumbercounter' ,text="Reset Number")
+        row.operator('mesh.bce_changenumberoflinkedobjects' ,text="Relink Objects")
+        layout.separator()
 
         row = layout.row(align=True)
         row.operator('mesh.bce_addtrimodifier' ,text="Triangulate")
@@ -130,6 +155,8 @@ classes = (
     bce_classes.BCE_OT_MakeTrisToQuads,
     bce_classes.BCE_OT_MakeSingleUserObjectData,
     bce_classes.BCE_OT_ResetScaleForLinkedObjects,
+    bce_classes.BCE_OT_ChangedNumberOfLinkedObjects,
+    bce_classes.BCE_OT_ResetNumberCounter,
     bce_classes.BCE_OT_ConvertHardEdgesToSeams,
     bce_classes.BCE_OT_SelectUVMap01,
     bce_classes.BCE_OT_SelectUVMap02,
