@@ -77,7 +77,7 @@ class BCEProperties(PropertyGroup):
         )
     
     axisRandomRotate: EnumProperty(
-        name="Axis:",
+        name="Axis",
         description="Rotation Axis",
         items=[ ('X', "X", ""),
                 ('Y', "Y", ""),
