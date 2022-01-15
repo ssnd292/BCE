@@ -3,7 +3,7 @@ bl_info = {
     "author" : "Sebastian Schneider",
     "description" : "Collection of often needed tools when working with imported CAD Data",
     "blender" : (2, 93, 0),
-    'version': (0, 1, 3),
+    'version': (0, 1, 5),
     "location" : "View3D",
     "warning" : "",
     "category" : "View3D"
@@ -41,6 +41,12 @@ class BCEProperties(PropertyGroup):
         name="MirrorHelper",
         description="Uses MirrorHelper for Mirroring",
         default = True
+        )
+
+    boolMirrorMoveUV: BoolProperty(
+        name="Move UV?",
+        description="Moves UV one Grid to the right",
+        default = False
         )
 
     stringUVMapName: StringProperty(
@@ -125,16 +131,20 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row = layout.row(align=True)
         row.operator('mesh.bce_resetnumbercounter' ,text="Reset Number")
         row.operator('mesh.bce_changenumberoflinkedobjects' ,text="Relink Objects")
-        layout.separator()
 
+        layout.separator()
         row = layout.row(align=True)
         row.operator('mesh.bce_addtrimodifier' ,text="Triangulate")
         
+        layout.separator()
         row = layout.row(align=True)
         row.prop(bceprops, "boolUseMirrorHelper")
-        row.operator('mesh.bce_addmirror' ,text="Mirror")
+        row.prop(bceprops, "boolMirrorMoveUV")
+        row = layout.row(align=True)
+        row.operator('mesh.bce_addmirror' ,text="Add Mirror Modifier")
 
         if hopsInstalled == True:
+            layout.separator()
             row = layout.row(align=True)
             row.prop(bceprops, "floatSmoothing") 
             row.operator('mesh.bce_addsmoothing' ,text="HardOps Sharpen")        
@@ -157,7 +167,7 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row.operator('mesh.bce_selectuvmap02' ,text="UVMap02")
 
         row = layout.row(align=True)
-        row.operator('mesh.bce_hardedgestoseams' ,text="Convert to Seams")  
+        row.operator('mesh.bce_hardedgestoseams' ,text="Convert Edge to Seams")  
 
         row = layout.row(align=True)
         row.operator('mesh.bce_addfwnmodifier' ,text="Add FWVN Modifier")
@@ -177,7 +187,7 @@ class BCE_PT_MainUI(bpy.types.Panel):
 
         layout.label(text="Miscellanous Functions:")
         row = layout.row(align=True)
-        row.operator('mesh.bce_deletelinkedobjects' ,text="Delete Linked")
+        row.operator('mesh.bce_deletelinkedobjects' ,text="Delete Linked Objects")
 
 
 # Classes

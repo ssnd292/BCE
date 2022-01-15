@@ -6,14 +6,21 @@ from random import uniform
 ## Modelling
 #########################################
 
+
+def selectionCheck(self, selectionCount):
+    if len(selectionCount) == 0:
+        self.report({'INFO'}, 'You have nothing selected to perform this action.')
+
 class BCE_OT_ClearCustomNormals(bpy.types.Operator):
     bl_idname = "mesh.bce_clearnormals"
     bl_label = "Clear Custom Normals"
     bl_description = "Clears Custome Normals of Selected Meshes"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def reset_normals(self, context):
+    def reset_normals(self, context):        
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
+
         for o in selection:
             bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
             bpy.context.view_layer.objects.active = o
@@ -32,6 +39,7 @@ class BCE_OT_MakeTrisToQuads(bpy.types.Operator):
 
     def tristoquads(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type  in ['MESH']:
@@ -52,6 +60,7 @@ class BCE_OT_MakeSingleUserObjectData(bpy.types.Operator):
 
     def makesingleuser(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
@@ -69,6 +78,7 @@ class BCE_OT_ResetScaleForLinkedObjects(bpy.types.Operator):
 
     def resetscalandrelink(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
@@ -89,6 +99,7 @@ class BCE_OT_ChangedNumberOfLinkedObjects(bpy.types.Operator):
 
     def changenumberoflinkedobjects(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         bceprops = context.scene.bceprops
         maxObjNumber = bceprops.maxObjectNumber
         divider = bceprops.commonDenominatorInt
@@ -142,6 +153,7 @@ class BCE_OT_AddFWNModifier(bpy.types.Operator):
 
     def addfwnmodifier(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
@@ -161,6 +173,7 @@ class BCE_OT_AddTriModifier(bpy.types.Operator):
 
     def addtrimodifier(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
@@ -179,23 +192,30 @@ class BCE_OT_AddMirror(bpy.types.Operator):
 
     def addmirror(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         bceprops = context.scene.bceprops
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
                 
-                bpy.ops.object.ml_modifier_add(modifier_type="MIRROR")
+                bpy.ops.object.modifier_add(type='MIRROR')
+                latestModifier = len(o.modifiers)-1
+                bpy.context.object.modifiers[latestModifier].name = "BCE_Mirror"                
+
+                if bceprops.boolMirrorMoveUV == True:
+                    bpy.context.object.modifiers[latestModifier].offset_u = 1
                 if bceprops.boolUseMirrorHelper:
                     mirrorHelper = bpy.context.scene.objects.get("MirrorHelper")
                     if mirrorHelper:
-                        bpy.context.object.modifiers["Mirror"].mirror_object = bpy.data.objects["MirrorHelper"]
+                        bpy.context.object.modifiers[latestModifier].mirror_object = bpy.data.objects["MirrorHelper"]
                     else:
                         tempSelectedObject = bpy.context.view_layer.objects.active
                         bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
                         for obj in bpy.context.selected_objects:
                             obj.name = "MirrorHelper"
                         bpy.context.view_layer.objects.active = tempSelectedObject
-                        bpy.context.object.modifiers["Mirror"].mirror_object = bpy.data.objects["MirrorHelper"]
+                        bpy.context.object.modifiers[latestModifier].mirror_object = bpy.data.objects["MirrorHelper"]
+                
 
     def execute(self, context):
         self.addmirror(context)
@@ -219,6 +239,7 @@ class BCE_OT_AddSmoothing(bpy.types.Operator):
 
     def addsmoothing(self, context):        
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         bpy.ops.mesh.bce_set_hopssharpness()
         for o in selection:
             bpy.context.view_layer.objects.active = o
@@ -239,6 +260,7 @@ class BCE_OT_LocalRandomRotate(bpy.types.Operator):
 
     def localrandomrotate(self, context):        
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         rotateAngle = context.scene.bceprops.maxRandomRotate
         rotateAxis = context.scene.bceprops.axisRandomRotate
 
@@ -266,9 +288,18 @@ class BCE_OT_ConvertHardEdgesToSeams(bpy.types.Operator):
 
     def hardedgestoseams(self, context):
         selection = bpy.context.selected_objects
-        if bpy.context.active_object.data.total_edge_sel == 1:
-            bpy.ops.mesh.select_similar(type='SHARP', threshold=0.01)
-            bpy.ops.mesh.mark_seam(clear=False)
+        selectionCheck(self,selection) 
+        
+        for o in selection:
+            current_mode = o.mode
+            if current_mode == "EDIT":
+                if bpy.context.active_object.data.total_edge_sel == 1:
+                    bpy.ops.mesh.select_similar(type='SHARP', threshold=0.01)
+                    bpy.ops.mesh.mark_seam(clear=False)
+                else:
+                    self.report({'ERROR'}, 'You need to select an Edge!')
+            else:
+                self.report({'Info'}, 'You need to select an Edge!')
     def execute(self, context):
         self.hardedgestoseams(context)
         return{'FINISHED'}
@@ -281,6 +312,7 @@ class BCE_OT_SelectUVMap01(bpy.types.Operator):
 
     def selectuvmap01(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
@@ -298,6 +330,7 @@ class BCE_OT_SelectUVMap02(bpy.types.Operator):
 
     def selectuvmap02(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH'] and len(o.data.uv_layers) == 2:
@@ -316,6 +349,7 @@ class BCE_OT_RenameUVMaps(bpy.types.Operator):
 
     def renameuvmaps(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         newUVMapName = context.scene.bceprops.stringUVMapName
         for o in selection:
             bpy.context.view_layer.objects.active = o
@@ -347,7 +381,14 @@ class BCE_OT_TransferUVMaps(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def transferuvmaps(self, context):
-        bpy.ops.object.data_transfer(data_type='UV', use_create=True, loop_mapping='POLYINTERP_LNORPROJ', poly_mapping='NORMAL', use_object_transform=True, ray_radius=0.01, islands_precision=0.5)
+        selection = bpy.context.selected_objects        
+        if len(selection) > 0:
+            if len(selection) == 2:
+                bpy.ops.object.data_transfer(data_type='UV', use_create=True, loop_mapping='POLYINTERP_LNORPROJ', poly_mapping='NORMAL', use_object_transform=True, ray_radius=0.01, islands_precision=0.5)
+            else:
+                self.report({'ERROR'}, 'You need to select at least two Objects!')
+        else:
+            selectionCheck(self,selection)
             
     def execute(self, context):
         self.transferuvmaps(context)
@@ -361,6 +402,7 @@ class BCE_OT_AddSecondUV(bpy.types.Operator):
 
     def addseconduv(self, context):
         selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) == 1:
