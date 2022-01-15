@@ -3,7 +3,7 @@ bl_info = {
     "author" : "Sebastian Schneider",
     "description" : "Collection of often needed tools when working with imported CAD Data",
     "blender" : (2, 93, 0),
-    'version': (0, 1, 2),
+    'version': (0, 1, 3),
     "location" : "View3D",
     "warning" : "",
     "category" : "View3D"
@@ -27,6 +27,14 @@ from bpy.types import (Panel,
                        )
                        
 from math import radians
+
+
+hopsInstalled = False
+
+for addon in bpy.context.preferences.addons:
+    if addon.module == "HOps":
+        hopsInstalled = True
+        print("HOps is installed.")
 
 class BCEProperties(PropertyGroup):
     boolUseMirrorHelper: BoolProperty(
@@ -126,9 +134,10 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row.prop(bceprops, "boolUseMirrorHelper")
         row.operator('mesh.bce_addmirror' ,text="Mirror")
 
-        row = layout.row(align=True)
-        row.prop(bceprops, "floatSmoothing") 
-        row.operator('mesh.bce_addsmoothing' ,text="HardOps Sharpen")
+        if hopsInstalled == True:
+            row = layout.row(align=True)
+            row.prop(bceprops, "floatSmoothing") 
+            row.operator('mesh.bce_addsmoothing' ,text="HardOps Sharpen")        
 
         layout.separator()
         row = layout.row(align=True)
