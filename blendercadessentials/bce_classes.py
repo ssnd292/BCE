@@ -1,7 +1,6 @@
 import bpy
-from math import radians
 from random import sample
-from bpy.props import FloatProperty
+from random import uniform
 
 #########################################
 ## Modelling
@@ -220,9 +219,7 @@ class BCE_OT_AddSmoothing(bpy.types.Operator):
 
     def addsmoothing(self, context):        
         selection = bpy.context.selected_objects
-        print("Starting Smoothness Overwrite")
         bpy.ops.mesh.bce_set_hopssharpness()
-        print("Returning to Setting HOps Sharpen")
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
@@ -232,6 +229,29 @@ class BCE_OT_AddSmoothing(bpy.types.Operator):
 
     def execute(self, context):
         self.addsmoothing(context)
+        return{'FINISHED'}
+
+class BCE_OT_LocalRandomRotate(bpy.types.Operator):
+    bl_idname = "mesh.bce_localrandomrotate"
+    bl_label = "Rotates Randomly Locally"
+    bl_description = "Randomly Rotates selected objects locally"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def localrandomrotate(self, context):        
+        selection = bpy.context.selected_objects
+        rotateAngle = context.scene.bceprops.maxRandomRotate
+        rotateAxis = context.scene.bceprops.axisRandomRotate
+
+        bpy.ops.mesh.bce_set_hopssharpness()
+        print("Returning to Setting HOps Sharpen")
+        for o in selection:
+            bpy.context.view_layer.objects.active = o
+            if o.type in ['MESH']:
+                actualAngle = uniform(-rotateAngle,rotateAngle)
+                o.rotation_euler.rotate_axis(rotateAxis, actualAngle)
+
+    def execute(self, context):
+        self.localrandomrotate(context)
         return{'FINISHED'}
 
 #########################################

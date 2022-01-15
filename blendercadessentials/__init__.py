@@ -3,7 +3,7 @@ bl_info = {
     "author" : "Sebastian Schneider",
     "description" : "Collection of often needed tools when working with imported CAD Data",
     "blender" : (2, 93, 0),
-    'version': (0, 1, 1),
+    'version': (0, 1, 2),
     "location" : "View3D",
     "warning" : "",
     "category" : "View3D"
@@ -66,6 +66,25 @@ class BCEProperties(PropertyGroup):
         min = 0,
         max = 10000,
         )
+    
+    maxRandomRotate: FloatProperty(
+        name = "",
+        description = "Maximum Random Rotation",
+        default = radians(180.0),
+        min = radians(0.0),
+        max = radians(180.0),
+        subtype="ANGLE",
+        )
+    
+    axisRandomRotate: EnumProperty(
+        name="Axis:",
+        description="Rotation Axis",
+        items=[ ('X', "X", ""),
+                ('Y', "Y", ""),
+                ('Z', "Z", ""),
+               ]
+        )
+
 
 class BCE_PT_MainUI(bpy.types.Panel):
     bl_idname = "BCE_PT_MainUI"
@@ -107,9 +126,16 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row.prop(bceprops, "boolUseMirrorHelper")
         row.operator('mesh.bce_addmirror' ,text="Mirror")
 
-        row = layout.row(align=True)        
+        row = layout.row(align=True)
         row.prop(bceprops, "floatSmoothing") 
         row.operator('mesh.bce_addsmoothing' ,text="HardOps Sharpen")
+
+        layout.separator()
+        row = layout.row(align=True)
+        row.prop(bceprops, "axisRandomRotate") 
+        row.prop(bceprops, "maxRandomRotate")
+        row = layout.row(align=True)
+        row.operator('mesh.bce_localrandomrotate' ,text="Random Local Rotate")
         
 
         ##
@@ -169,6 +195,7 @@ classes = (
     bce_classes.BCE_OT_DeleteLinkedObjects,
     bce_classes.BCE_OT_TransferUVMaps,
     bce_classes.BCE_OT_AddSecondUV,
+    bce_classes.BCE_OT_LocalRandomRotate,
 )
 
 def register():
