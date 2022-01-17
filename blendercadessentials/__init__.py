@@ -1,9 +1,9 @@
 bl_info = {
     "name" : "Blender CAD Essentials",
     "author" : "Sebastian Schneider",
-    "description" : "Collection of often needed tools when working with imported CAD Data",
+    "description" : "Collection of often needed tools when working with imported CAD Data.",
     "blender" : (2, 93, 0),
-    'version': (0, 1, 5),
+    'version': (0, 1, 6),
     "location" : "View3D",
     "warning" : "",
     "category" : "View3D"
