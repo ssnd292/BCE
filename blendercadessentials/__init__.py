@@ -3,7 +3,7 @@ bl_info = {
     "author" : "Sebastian Schneider",
     "description" : "Collection of often needed tools when working with imported CAD Data.",
     "blender" : (2, 93, 0),
-    'version': (0, 1, 6),
+    'version': (0, 1, 7),
     "location" : "View3D",
     "warning" : "",
     "category" : "View3D"
@@ -129,34 +129,34 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row.prop(bceprops, "maxObjectNumber")
         row.prop(bceprops, "commonDenominatorInt")
         row = layout.row(align=True)
+        layout.separator()
         row.operator('mesh.bce_resetnumbercounter' ,text="Reset Number")
-        row.operator('mesh.bce_changenumberoflinkedobjects' ,text="Relink Objects")
+        row.operator('mesh.bce_changenumberoflinkedobjects' ,text="Relink Objects")        
 
-        layout.separator()
-        row = layout.row(align=True)
-        row.operator('mesh.bce_addtrimodifier' ,text="Triangulate")
-        
-        layout.separator()
-        row = layout.row(align=True)
-        row.prop(bceprops, "boolUseMirrorHelper")
-        row.prop(bceprops, "boolMirrorMoveUV")
-        row = layout.row(align=True)
-        row.operator('mesh.bce_addmirror' ,text="Add Mirror Modifier")
-
-        if hopsInstalled == True:
-            layout.separator()
+        if hopsInstalled == True:            
             row = layout.row(align=True)
             row.prop(bceprops, "floatSmoothing") 
-            row.operator('mesh.bce_addsmoothing' ,text="HardOps Sharpen")        
+            row.operator('mesh.bce_addsmoothing' ,text="HardOps Sharpen")  
+            layout.separator()      
 
-        layout.separator()
         row = layout.row(align=True)
         row.prop(bceprops, "axisRandomRotate") 
         row.prop(bceprops, "maxRandomRotate")
         row = layout.row(align=True)
         row.operator('mesh.bce_localrandomrotate' ,text="Random Local Rotate")
         
+        layout.separator()
+        layout.label(text="Modifier:")
+        row = layout.row(align=True)
+        row.operator('mesh.bce_addtrimodifier' ,text="Triangulate")        
+        row = layout.row(align=True)
+        row.operator('mesh.bce_addfwnmodifier' ,text="Add FWVN Modifier")        
 
+        row = layout.row(align=True)
+        row.prop(bceprops, "boolUseMirrorHelper")
+        row.prop(bceprops, "boolMirrorMoveUV")
+        row = layout.row(align=True)
+        row.operator('mesh.bce_addmirror' ,text="Add Mirror Modifier")
         ##
         layout.separator()
         ##
@@ -168,9 +168,6 @@ class BCE_PT_MainUI(bpy.types.Panel):
 
         row = layout.row(align=True)
         row.operator('mesh.bce_hardedgestoseams' ,text="Convert Edge to Seams")  
-
-        row = layout.row(align=True)
-        row.operator('mesh.bce_addfwnmodifier' ,text="Add FWVN Modifier")
 
         row = layout.row(align=True)
         row.operator('mesh.bce_renameuvmaps' ,text="Rename UV Maps")
