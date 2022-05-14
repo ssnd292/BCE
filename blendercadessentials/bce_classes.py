@@ -304,8 +304,8 @@ class BCE_OT_ConvertHardEdgesToSeams(bpy.types.Operator):
         self.hardedgestoseams(context)
         return{'FINISHED'}
 
-class BCE_OT_SelectUVMap01(bpy.types.Operator):
-    bl_idname = "mesh.bce_selectuvmap01"
+class BCE_OT_SelectUVMap(bpy.types.Operator):
+    bl_idname = "mesh.bce_selectuvmap"
     bl_label = "Select UVMap 01"
     bl_description = "Selects First UVMap"
     bl_options = {'REGISTER', 'UNDO'}
@@ -313,31 +313,14 @@ class BCE_OT_SelectUVMap01(bpy.types.Operator):
     def selectuvmap01(self, context):
         selection = bpy.context.selected_objects
         selectionCheck(self,selection)
+        selectedUV = context.scene.bceprops.uvMapEnum
         for o in selection:
             bpy.context.view_layer.objects.active = o
             if o.type in ['MESH']:
-                o.data.uv_layers.active_index = 0
+                o.data.uv_layers.active_index =  int(selectedUV)
 
     def execute(self, context):
         self.selectuvmap01(context)
-        return{'FINISHED'}
-
-class BCE_OT_SelectUVMap02(bpy.types.Operator):
-    bl_idname = "mesh.bce_selectuvmap02"
-    bl_label = "Select UVMap 02"
-    bl_description = "Selects First UVMap"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def selectuvmap02(self, context):
-        selection = bpy.context.selected_objects
-        selectionCheck(self,selection)
-        for o in selection:
-            bpy.context.view_layer.objects.active = o
-            if o.type in ['MESH'] and len(o.data.uv_layers) == 2:
-                o.data.uv_layers.active_index = 1
-
-    def execute(self, context):
-        self.selectuvmap02(context)
         return{'FINISHED'}
 
 

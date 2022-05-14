@@ -2,8 +2,8 @@ bl_info = {
     "name" : "Blender CAD Essentials",
     "author" : "Sebastian Schneider",
     "description" : "Collection of often needed tools when working with imported CAD Data.",
-    "blender" : (2, 93, 0),
-    'version': (0, 1, 7),
+    "blender" : (3, 1, 0),
+    'version': (0, 1, 8),
     "location" : "View3D",
     "warning" : "",
     "category" : "View3D"
@@ -99,6 +99,20 @@ class BCEProperties(PropertyGroup):
                ]
         )
 
+    uvMapEnum: EnumProperty(
+    name="UV",
+    description="UV Selector",
+    items=[ ('0', "UV00", ""),
+            ('1', "UV01", ""),
+            ('2', "UV02", ""),
+            ('3', "UV03", ""),
+            ('4', "UV04", ""),
+            ('5', "UV05", ""),
+            ('6', "UV06", ""),
+            ('7', "UV07", ""),
+            ]
+    )
+
 
 class BCE_PT_MainUI(bpy.types.Panel):
     bl_idname = "BCE_PT_MainUI"
@@ -163,8 +177,9 @@ class BCE_PT_MainUI(bpy.types.Panel):
         layout.label(text="Unwrapping Functions:")
 
         row = layout.row(align=True)
-        row.operator('mesh.bce_selectuvmap01' ,text="UVMap01")
-        row.operator('mesh.bce_selectuvmap02' ,text="UVMap02")
+        row.prop(bceprops, "uvMapEnum") 
+        row.operator('mesh.bce_selectuvmap' ,text="Select UV")
+        ##row.operator('mesh.bce_selectuvmap02' ,text="UVMap02")
 
         row = layout.row(align=True)
         row.operator('mesh.bce_hardedgestoseams' ,text="Convert Edge to Seams")  
@@ -200,8 +215,7 @@ classes = (
     bce_classes.BCE_OT_ChangedNumberOfLinkedObjects,
     bce_classes.BCE_OT_ResetNumberCounter,
     bce_classes.BCE_OT_ConvertHardEdgesToSeams,
-    bce_classes.BCE_OT_SelectUVMap01,
-    bce_classes.BCE_OT_SelectUVMap02,
+    bce_classes.BCE_OT_SelectUVMap,
     bce_classes.BCE_OT_RenameUVMaps,
     bce_classes.BCE_OT_AddFWNModifier,
     bce_classes.BCE_OT_AddTriModifier,
