@@ -3,10 +3,11 @@ bl_info = {
     "author" : "Sebastian Schneider",
     "description" : "Collection of often needed tools when working with imported CAD Data.",
     "blender" : (3, 1, 0),
-    'version': (0, 1, 9 ,3),
+    'version': (0, 1, 9 ,4),
     "location" : "View3D",
     "warning" : "",
-    "category" : "View3D"
+    "category" : "View3D",
+    'wiki_url': 'https://github.com/ssnd292/BCE'
 }
 
 import bpy
@@ -176,26 +177,27 @@ class BCE_PT_MainUI(bpy.types.Panel):
         layout.separator()
         ##
         layout.label(text="Unwrapping Functions:")
+        row = layout.row(align=True)
+        row.operator('mesh.bce_hardedgestoseams' ,text="Convert Edge to Seams")
 
         row = layout.row(align=True)
         row.prop(bceprops, "uvMapEnum") 
         row.operator('mesh.bce_selectuvmap' ,text="Select UV")
-        row = layout.row(align=True)
-        row.operator('mesh.bce_adduvmap' ,text="Add UVMap")
-        row.operator('mesh.bce_removeselecteduvmap' ,text="Remove UVMap")
 
         row = layout.row(align=True)
-        row.operator('mesh.bce_hardedgestoseams' ,text="Convert Edge to Seams")  
+        row.operator('mesh.bce_adduvmap' ,text="Add UVMap")
+        row.operator('mesh.bce_removeselecteduvmap' ,text="Remove UVMap")        
 
         layout.separator()
         row = layout.row(align=True)
-        row.operator('mesh.bce_renameuvmaps' ,text="Rename UV Maps")
-
-        row = layout.row(align=True)
         row.prop(bceprops, "stringUVMapName")
+        row = layout.row(align=True)
+        row.operator('mesh.bce_renameuvmaps' ,text="Rename Selected UVMaps")
+
+        layout.separator()      
 
         row = layout.row(align=True)
-        row.operator('mesh.bce_transferuvmaps' ,text="Transfer UV Maps")
+        row.operator('mesh.bce_transferuvmaps' ,text="Transfer UVMap")
 
         ##
         layout.separator()
@@ -223,6 +225,7 @@ classes = (
     bce_classes.BCE_OT_RenameUVMaps,
     bce_classes.BCE_OT_AddFWNModifier,
     bce_classes.BCE_OT_AddTriModifier,
+    bce_classes.BCE_OT_LocalRandomRotate,
     bce_classes.BCE_OT_AddMirror,
     bce_classes.BCE_OT_SetHOPsSharpness,
     bce_classes.BCE_OT_AddSmoothing,    
@@ -230,7 +233,7 @@ classes = (
     bce_classes.BCE_OT_TransferUVMaps,
     bce_classes.BCE_OT_AddUVMap,
     bce_classes.BCE_OT_RemoveSelectedUVMap,
-    bce_classes.BCE_OT_LocalRandomRotate,
+
 )
 
 def register():

@@ -288,18 +288,20 @@ class BCE_OT_ConvertHardEdgesToSeams(bpy.types.Operator):
 
     def hardedgestoseams(self, context):
         selection = bpy.context.selected_objects
-        selectionCheck(self,selection) 
-        
+        selectionCheck(self,selection)        
         for o in selection:
             current_mode = o.mode
             if current_mode == "EDIT":
                 if bpy.context.active_object.data.total_edge_sel == 1:
-                    bpy.ops.mesh.select_similar(type='SHARP', threshold=0.01)
-                    bpy.ops.mesh.mark_seam(clear=False)
+                    try:
+                        bpy.ops.mesh.select_similar(type='SHARP', threshold=0.01)
+                        bpy.ops.mesh.mark_seam(clear=False)
+                    except:
+                        self.report({'ERROR'}, 'You need to select an Edge!')
                 else:
                     self.report({'ERROR'}, 'You need to select an Edge!')
             else:
-                self.report({'Info'}, 'You need to select an Edge!')
+                self.report({'ERROR'}, 'You need to select an Edge!')
     def execute(self, context):
         self.hardedgestoseams(context)
         return{'FINISHED'}
@@ -341,13 +343,13 @@ class BCE_OT_RenameUVMaps(bpy.types.Operator):
                 currentUVMap = uvLayers.active_index
                 if uvLayers:
                     if uvLayers[currentUVMap].name == newUVMapName:
-                        self.report({'INFO'}, 'A UVMap with that Name already exists.')
+                        self.report({'ERROR'}, 'A UVMap with that Name already exists.')
                     else:
                         uvLayers[currentUVMap].name = newUVMapName
                 else:
                     bpy.ops.mesh.uv_texture_add()
                     if uvLayers[currentUVMap].name == newUVMapName:
-                        self.report({'INFO'}, 'A UVMap with that Name already exists.')
+                        self.report({'ERROR'}, 'A UVMap with that Name already exists.')
                     else:
                         uvLayers[currentUVMap].name = newUVMapName
                     
@@ -391,8 +393,8 @@ class BCE_OT_AddUVMap(bpy.types.Operator):
             if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) > 0:
                 bpy.ops.mesh.uv_texture_add()
             
-    def adduvmap(self, context):
-        self.transferuvmaps(context)
+    def execute(self, context):
+        self.adduvmap(context)
         return{'FINISHED'}
 
 class BCE_OT_RemoveSelectedUVMap(bpy.types.Operator):
@@ -409,8 +411,8 @@ class BCE_OT_RemoveSelectedUVMap(bpy.types.Operator):
             if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) > 0:
                 bpy.ops.mesh.uv_texture_remove()
             
-    def removeselecteduvmap(self, context):
-        self.transferuvmaps(context)
+    def execute(self, context):
+        self.removeselecteduvmap(context)
         return{'FINISHED'}
 
 #########################################
