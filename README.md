@@ -7,8 +7,8 @@ This addon is built for working primarily with CAD Data, but it also helps with 
 
 To run the Hops Sharpen, you need Hard Ops installed!
 
-Current main:: 0.1.5
-Current dev: 0.1.6
+Current main:: 0.1.9.3
+Current dev: 0.1.9.3
 
 
-![2022-01-15 16_28_16-Blender](https://user-images.githubusercontent.com/3914410/149627447-ed629a32-8fdf-4777-b61c-133ced9d486a.jpg)
+![2023-02-08 07_35_44-Blender](https://user-images.githubusercontent.com/3914410/217453121-4c804980-82e8-4d03-b0ae-8ee464907460.jpg)
