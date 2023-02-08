@@ -377,21 +377,39 @@ class BCE_OT_TransferUVMaps(bpy.types.Operator):
         self.transferuvmaps(context)
         return{'FINISHED'}
 
-class BCE_OT_AddSecondUV(bpy.types.Operator):
-    bl_idname = "mesh.bce_addseconduv"
-    bl_label = "Adds Second UVMap"
-    bl_description = "Add Second UVMap to all Selected Objects if they only have one"
+class BCE_OT_AddUVMap(bpy.types.Operator):
+    bl_idname = "mesh.bce_adduvmap"
+    bl_label = "Adds UVMap"
+    bl_description = "Adds another UVMap to all Selected Objects."
     bl_options = {'REGISTER', 'UNDO'}
 
-    def addseconduv(self, context):
+    def adduvmap(self, context):
         selection = bpy.context.selected_objects
         selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
-            if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) == 1:
+            if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) > 0:
                 bpy.ops.mesh.uv_texture_add()
             
-    def addseconduv(self, context):
+    def adduvmap(self, context):
+        self.transferuvmaps(context)
+        return{'FINISHED'}
+
+class BCE_OT_RemoveSelectedUVMap(bpy.types.Operator):
+    bl_idname = "mesh.bce_removeselecteduvmap"
+    bl_label = "Removes Selected UVMap"
+    bl_description = "Removes Selected UVMap from all selected objects."
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def removeselecteduvmap(self, context):
+        selection = bpy.context.selected_objects
+        selectionCheck(self,selection)
+        for o in selection:
+            bpy.context.view_layer.objects.active = o
+            if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) > 0:
+                bpy.ops.mesh.uv_texture_remove()
+            
+    def removeselecteduvmap(self, context):
         self.transferuvmaps(context)
         return{'FINISHED'}
 
@@ -406,7 +424,7 @@ class BCE_OT_DeleteLinkedObjects(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def deletelinkedobjects(self, context):
-        bpy.ops.object.select_linked(type='OBDATA')
+        bpy.ops.object.select_linked()
         bpy.context.active_object.select_set(False)
         bpy.ops.object.delete(use_global=False, confirm=False)
 

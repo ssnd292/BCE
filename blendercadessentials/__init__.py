@@ -2,8 +2,8 @@ bl_info = {
     "name" : "Blender CAD Essentials",
     "author" : "Sebastian Schneider",
     "description" : "Collection of often needed tools when working with imported CAD Data.",
-    "blender" : (3, 4, 0),
-    'version': (0, 1, 9),
+    "blender" : (3, 1, 0),
+    'version': (0, 1, 9 ,3),
     "location" : "View3D",
     "warning" : "",
     "category" : "View3D"
@@ -160,11 +160,12 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row.operator('mesh.bce_localrandomrotate' ,text="Random Local Rotate")
         
         layout.separator()
-        layout.label(text="Modifier:")
+        layout.label(text="Modifier:")       
+        row = layout.row(align=True)
+        row.operator('mesh.bce_addfwnmodifier' ,text="Add FWVN Modifier")   
         row = layout.row(align=True)
         row.operator('mesh.bce_addtrimodifier' ,text="Triangulate")        
-        row = layout.row(align=True)
-        row.operator('mesh.bce_addfwnmodifier' ,text="Add FWVN Modifier")        
+     
 
         row = layout.row(align=True)
         row.prop(bceprops, "boolUseMirrorHelper")
@@ -179,11 +180,14 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row = layout.row(align=True)
         row.prop(bceprops, "uvMapEnum") 
         row.operator('mesh.bce_selectuvmap' ,text="Select UV")
-        ##row.operator('mesh.bce_selectuvmap02' ,text="UVMap02")
+        row = layout.row(align=True)
+        row.operator('mesh.bce_addanotheruv' ,text="Add UVMap")
+        row.operator('mesh.bce_removeselecteduvmap' ,text="Remove UVMap")
 
         row = layout.row(align=True)
         row.operator('mesh.bce_hardedgestoseams' ,text="Convert Edge to Seams")  
 
+        layout.separator()
         row = layout.row(align=True)
         row.operator('mesh.bce_renameuvmaps' ,text="Rename UV Maps")
 
@@ -224,7 +228,8 @@ classes = (
     bce_classes.BCE_OT_AddSmoothing,    
     bce_classes.BCE_OT_DeleteLinkedObjects,
     bce_classes.BCE_OT_TransferUVMaps,
-    bce_classes.BCE_OT_AddSecondUV,
+    bce_classes.BCE_OT_AddUVMap,
+    bce_classes.BCE_OT_RemoveSelectedUVMap,
     bce_classes.BCE_OT_LocalRandomRotate,
 )
 
