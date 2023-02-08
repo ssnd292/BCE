@@ -181,7 +181,7 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row.prop(bceprops, "uvMapEnum") 
         row.operator('mesh.bce_selectuvmap' ,text="Select UV")
         row = layout.row(align=True)
-        row.operator('mesh.bce_addanotheruv' ,text="Add UVMap")
+        row.operator('mesh.bce_adduvmap' ,text="Add UVMap")
         row.operator('mesh.bce_removeselecteduvmap' ,text="Remove UVMap")
 
         row = layout.row(align=True)
