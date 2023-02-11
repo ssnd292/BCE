@@ -5,7 +5,8 @@ from random import uniform
 #########################################
 ## Modelling
 #########################################
-
+uvLengthOld = 0
+uvLengthNew = 0
 
 def selectionCheck(self, selectionCount):
     if len(selectionCount) == 0:
@@ -390,8 +391,10 @@ class BCE_OT_AddUVMap(bpy.types.Operator):
         selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
-            if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) > 0:
+            uvLengthOld = len(bpy.context.object.data.uv_layers)
+            if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) > 0 and uvLengthNew != uvLengthOld:
                 bpy.ops.mesh.uv_texture_add()
+                uvLengthNew = len(bpy.context.object.data.uv_layers)
             
     def execute(self, context):
         self.adduvmap(context)
@@ -408,8 +411,10 @@ class BCE_OT_RemoveSelectedUVMap(bpy.types.Operator):
         selectionCheck(self,selection)
         for o in selection:
             bpy.context.view_layer.objects.active = o
-            if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) > 0:
+            uvLengthOld = len(bpy.context.object.data.uv_layers)
+            if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) > 0 and uvLengthNew != uvLengthOld:
                 bpy.ops.mesh.uv_texture_remove()
+                uvLengthNew = len(bpy.context.object.data.uv_layers)
             
     def execute(self, context):
         self.removeselecteduvmap(context)
