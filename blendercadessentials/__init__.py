@@ -3,7 +3,7 @@ bl_info = {
     "author" : "Sebastian Schneider",
     "description" : "Collection of often needed tools when working with imported CAD Data.",
     "blender" : (3, 1, 0),
-    'version': (0, 1, 9 ,4),
+    'version': (0, 1, 9 ,5),
     "location" : "View3D",
     "warning" : "",
     "category" : "View3D",
