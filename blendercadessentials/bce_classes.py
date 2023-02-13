@@ -313,7 +313,7 @@ class BCE_OT_SelectUVMap(bpy.types.Operator):
     bl_description = "Selects First UVMap"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def selectuvmap01(self, context):
+    def selectuvmap(self, context):
         selection = bpy.context.selected_objects
         selectionCheck(self,selection)
         selectedUV = context.scene.bceprops.uvMapEnum
@@ -323,7 +323,7 @@ class BCE_OT_SelectUVMap(bpy.types.Operator):
                 o.data.uv_layers.active_index =  int(selectedUV)
 
     def execute(self, context):
-        self.selectuvmap01(context)
+        self.selectuvmap(context)
         return{'FINISHED'}
 
 
@@ -387,6 +387,7 @@ class BCE_OT_AddUVMap(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def adduvmap(self, context):
+        uvLengthNew = 0
         selection = bpy.context.selected_objects
         selectionCheck(self,selection)
         for o in selection:
@@ -407,12 +408,15 @@ class BCE_OT_RemoveSelectedUVMap(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def removeselecteduvmap(self, context):
+        uvLengthNew = 0
         selection = bpy.context.selected_objects
         selectionCheck(self,selection)
+        selectedUV = context.scene.bceprops.uvMapEnum
         for o in selection:
             bpy.context.view_layer.objects.active = o
             uvLengthOld = len(bpy.context.object.data.uv_layers)
             if o.type in ['MESH'] and len(bpy.context.object.data.uv_layers) > 0 and uvLengthNew != uvLengthOld:
+                o.data.uv_layers.active_index =  int(selectedUV)
                 bpy.ops.mesh.uv_texture_remove()
                 uvLengthNew = len(bpy.context.object.data.uv_layers)
             

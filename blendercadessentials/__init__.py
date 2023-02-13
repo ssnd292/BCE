@@ -29,6 +29,13 @@ from bpy.types import (Panel,
                        
 from math import radians
 
+# Classes
+from . import bce_classes 
+
+def set_bce_selectuvmap(self, context):
+    value = context.scene.bceprops.uvMapEnum
+    print(value)
+    
 
 hopsInstalled = False
 
@@ -101,7 +108,8 @@ class BCEProperties(PropertyGroup):
         )
 
     uvMapEnum: EnumProperty(
-    name="UV",
+    update=bce_classes.BCE_OT_SelectUVMap.selectuvmap,
+    name="Select UV",
     description="UV Selector",
     items=[ ('0', "UV00", ""),
             ('1', "UV01", ""),
@@ -182,11 +190,11 @@ class BCE_PT_MainUI(bpy.types.Panel):
 
         row = layout.row(align=True)
         row.prop(bceprops, "uvMapEnum") 
-        row.operator('mesh.bce_selectuvmap' ,text="Select UV")
+        #row.operator('mesh.bce_selectuvmap' ,text="Select UV")
 
         row = layout.row(align=True)
         row.operator('mesh.bce_adduvmap' ,text="Add UVMap")
-        row.operator('mesh.bce_removeselecteduvmap' ,text="Remove UVMap")        
+        row.operator('mesh.bce_removeselecteduvmap' ,text="Remove Selected UV")        
 
         layout.separator()
         row = layout.row(align=True)
@@ -207,9 +215,6 @@ class BCE_PT_MainUI(bpy.types.Panel):
         row = layout.row(align=True)
         row.operator('mesh.bce_deletelinkedobjects' ,text="Delete Linked Objects")
 
-
-# Classes
-from . import bce_classes 
 
 classes = (
     BCEProperties,
@@ -235,6 +240,8 @@ classes = (
     bce_classes.BCE_OT_RemoveSelectedUVMap,
 
 )
+
+
 
 def register():
     for cls in classes:
